@@ -20,8 +20,8 @@ import HttpStatusCodes from '@src/constants/HttpStatusCodes';
 import { NodeEnvs } from '@src/constants/misc';
 import { RouteError } from '@src/other/classes';
 
-//import { MyMongoDB } from '@src/repos/MyDB'; 
-//import Greetings, { HelloModel } from '@src/models/Hello';
+import { MyMongoDB } from '@src/repos/MyDB'; 
+import Greetings, { HelloModel } from '@src/models/Hello';
 
 
 // **** Variables **** //
@@ -35,7 +35,7 @@ const app = express();
 app.use(express.json());
 app.use(express.urlencoded({extended: true}));
 app.use(cookieParser(EnvVars.CookieProps.Secret));
-// app.use(()=>MyMongoDB.initDB());
+app.use(()=>MyMongoDB.initDB());
 
 // Show routes called in console during development
 if (EnvVars.NodeEnv === NodeEnvs.Dev) {
@@ -98,11 +98,11 @@ app.get('/hello:name', (req: Request, res: Response) => {
   res.send(JSON.stringify({hello:`hello World! ${req.params.name}`}))
 });
 
-app.post('/hello', (req: Request, res: Response) => {
+app.post('/hello', async (req: Request, res: Response) => {
   try{
-    const model = req.body;
+    const model = String(req.body);
     console.log(model);
-    //const hello = await Greetings.create(model);
+    const hello = await Greetings.create(model);
     res.send('Greeting created successfully');
   }catch(e){
     res.send('Error creating greeting');
